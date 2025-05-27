@@ -1,0 +1,47 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+*.md
+
+# Logs
+log/*
+*.log
+
+# Runtime data
+tmp/*
+storage/*
+
+# Environment files
+.env
+.env.*
+
+# Node modules (if any)
+node_modules
+
+# Coverage reports
+coverage
+
+# Test files
+spec/
+test/
+
+# Development dependencies
+.bundle/vendor
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore

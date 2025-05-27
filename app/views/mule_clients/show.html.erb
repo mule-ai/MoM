@@ -1,0 +1,141 @@
+<%= link_to "← Back to Dashboard", root_path, class: "back-link" %>
+
+<div class="card">
+  <div class="card-header">
+    <%= @client[:name] %>
+    <span class="status-badge status-<%= @client[:status] == 'unverified' ? 'idle' : @client[:status] %>" style="float: right;">
+      <%= @client[:status].capitalize %>
+    </span>
+  </div>
+  
+  <div class="card-body">
+    <div class="grid">
+      <div>
+        <h4>Connection Details</h4>
+        <p><strong>Host:</strong> <%= @client[:host] %></p>
+        <p><strong>Port:</strong> <%= @client[:port] %></p>
+        <p><strong>Client ID:</strong> <%= @client[:id] %></p>
+        <p><strong>Last Heartbeat:</strong> <%= Time.at(@client[:last_heartbeat]).strftime('%Y-%m-%d %H:%M:%S UTC') %></p>
+      </div>
+      
+      <div>
+        <h4>Capabilities</h4>
+        <% if @client[:capabilities] && @client[:capabilities].is_a?(Array) && @client[:capabilities].any? %>
+          <% @client[:capabilities].each do |capability| %>
+            <span class="status-badge status-active" style="margin: 0.2rem 0.2rem 0.2rem 0; display: inline-block;">
+              <%= capability %>
+            </span>
+          <% end %>
+        <% elsif @client[:capabilities] && @client[:capabilities].is_a?(String) && @client[:capabilities].present? %>
+          <% @client[:capabilities].split(',').map(&:strip).each do |capability| %>
+            <span class="status-badge status-active" style="margin: 0.2rem 0.2rem 0.2rem 0; display: inline-block;">
+              <%= capability %>
+            </span>
+          <% end %>
+        <% else %>
+          <p style="color: #666;">No capabilities specified</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card">
+    <div class="card-header">AI Providers</div>
+    <div class="card-body">
+      <% @providers.each do |provider| %>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #eee;">
+          <div>
+            <strong><%= provider[:name] %></strong>
+            <br>
+            <small style="color: #666;"><%= provider[:type] %></small>
+          </div>
+          <span class="status-badge status-<%= provider[:status] %>">
+            <%= provider[:status].capitalize %>
+          </span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">Active Agents</div>
+    <div class="card-body">
+      <% @agents.each do |agent| %>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #eee;">
+          <div>
+            <strong><%= agent[:name] %></strong>
+            <br>
+            <small style="color: #666;">Last used: <%= time_ago_in_words(agent[:last_used]) %> ago</small>
+          </div>
+          <span class="status-badge status-<%= agent[:status] %>">
+            <%= agent[:status].capitalize %>
+          </span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">Available Workflows</div>
+  <div class="card-body">
+    <div class="grid">
+      <% @workflows.each do |workflow| %>
+        <div class="card">
+          <div class="card-body">
+            <h4 style="margin-top: 0;"><%= workflow[:name] %></h4>
+            <p style="color: #666; margin-bottom: 1rem;"><%= workflow[:description] %></p>
+            
+            <%= form_with(url: execute_workflow_mule_client_path(@client[:id]), local: true, data: { turbo: false }) do |form| %>
+              <%= form.hidden_field "workflow[workflow_name]", value: workflow[:name] %>
+              
+              <div class="form-group">
+                <%= form.label "workflow[prompt]", "Prompt" %>
+                <%= form.text_area "workflow[prompt]", class: "form-control", rows: 3, placeholder: "Describe what you want the workflow to accomplish..." %>
+              </div>
+              
+              <div class="form-group">
+                <%= form.label "workflow[repository_path]", "Repository Path" %>
+                <%= form.text_field "workflow[repository_path]", class: "form-control", placeholder: "/path/to/repository" %>
+              </div>
+              
+              <%= form.submit "Execute Workflow", class: "btn btn-success" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<% if @running_workflows.any? %>
+  <div class="card">
+    <div class="card-header">Running Workflows</div>
+    <div class="card-body">
+      <% @running_workflows.each do |workflow| %>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 1rem;">
+          <div>
+            <strong><%= workflow[:workflow_name] %></strong>
+            <br>
+            <small style="color: #666;">Started: <%= Time.at(workflow[:started_at]).strftime('%Y-%m-%d %H:%M:%S') %></small>
+            <% if workflow[:prompt] %>
+              <br>
+              <small style="color: #666;">Prompt: <%= truncate(workflow[:prompt], length: 100) %></small>
+            <% end %>
+          </div>
+          <span class="status-badge status-active">
+            <%= workflow[:status].capitalize %>
+          </span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<div style="margin-top: 2rem;">
+  <%= button_to "Remove Client", mule_client_path(@client[:id]), method: :delete, 
+      class: "btn btn-danger", 
+      data: { confirm: "Are you sure you want to remove this client? This action cannot be undone." } %>
+</div>

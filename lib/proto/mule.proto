@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package mule;
+
+option go_package = "github.com/mule-ai/mom/lib/proto";
+
+// Import the actual Mule service from mule.v1 package
+import "google/protobuf/timestamp.proto";
+
+// MoM Manager Service - for managing multiple Mule clients
+service MuleManagerService {
+  rpc RegisterMuleClient(RegisterMuleClientRequest) returns (RegisterMuleClientResponse);
+  rpc GetMuleClients(GetMuleClientsRequest) returns (GetMuleClientsResponse);
+  rpc ExecuteWorkflowOnClient(ExecuteWorkflowManagerRequest) returns (ExecuteWorkflowManagerResponse);
+  rpc GetClientStatus(GetClientStatusRequest) returns (GetClientStatusResponse);
+  rpc DeregisterMuleClient(DeregisterMuleClientRequest) returns (DeregisterMuleClientResponse);
+}
+
+
+message MuleClient {
+  string id = 1;
+  string name = 2;
+  string host = 3;
+  int32 port = 4;
+  string status = 5;
+  int64 last_heartbeat = 6;
+  repeated string capabilities = 7;
+}
+
+message RegisterMuleClientRequest {
+  string name = 1;
+  string host = 2;
+  int32 port = 3;
+  repeated string capabilities = 4;
+}
+
+message RegisterMuleClientResponse {
+  string client_id = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message GetMuleClientsRequest {}
+
+message GetMuleClientsResponse {
+  repeated MuleClient clients = 1;
+}
+
+message ExecuteWorkflowManagerRequest {
+  string client_id = 1;
+  string workflow_name = 2;
+  string prompt = 3;
+  string repository_path = 4;
+  map<string, string> parameters = 5;
+}
+
+message ExecuteWorkflowManagerResponse {
+  string execution_id = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message GetClientStatusRequest {
+  string client_id = 1;
+}
+
+message GetClientStatusResponse {
+  MuleClient client = 1;
+  repeated WorkflowExecution running_workflows = 2;
+}
+
+message DeregisterMuleClientRequest {
+  string client_id = 1;
+}
+
+message DeregisterMuleClientResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message WorkflowExecution {
+  string id = 1;
+  string workflow_name = 2;
+  string status = 3;
+  int64 started_at = 4;
+  string prompt = 5;
+}
+

@@ -1,0 +1,78 @@
+<%= link_to "← Back to Dashboard", root_path, class: "back-link" %>
+
+<div class="card">
+  <div class="card-header">
+    Add New Mule Client
+  </div>
+  
+  <div class="card-body">
+    <% if @error_message %>
+      <div class="alert alert-error">
+        <strong>Connection Failed:</strong> <%= @error_message %>
+        <br><br>
+        <p>The Mule instance could not be reached. This might happen if:</p>
+        <ul>
+          <li>The host/port is incorrect</li>
+          <li>The Mule instance is not running</li>
+          <li>gRPC is not enabled on the Mule instance</li>
+          <li>Network connectivity issues</li>
+        </ul>
+        <p>You can still add this client, but it will be marked as "unverified".</p>
+      </div>
+    <% end %>
+    
+    <%= form_with(url: mule_clients_path, local: true, data: { turbo: false }) do |form| %>
+      <div class="form-group">
+        <%= form.label "client[name]", "Client Name" %>
+        <%= form.text_field "client[name]", class: "form-control", placeholder: "e.g., Production Mule", required: true, value: @client_data&.dig(:name) %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label "client[host]", "Host" %>
+        <%= form.text_field "client[host]", class: "form-control", placeholder: "e.g., mule.example.com or 192.168.1.100", required: true, value: @client_data&.dig(:host) %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label "client[port]", "Port" %>
+        <%= form.number_field "client[port]", class: "form-control", placeholder: "9090", value: @client_data&.dig(:port) || 9090, required: true %>
+      </div>
+
+      <div class="form-group">
+        <%= form.label "client[capabilities]", "Capabilities (comma-separated)" %>
+        <%= form.text_field "client[capabilities]", class: "form-control", placeholder: "e.g., code-generation, bug-fixing, documentation", value: @client_data&.dig(:capabilities).is_a?(Array) ? @client_data[:capabilities].join(', ') : @client_data&.dig(:capabilities) %>
+        <small style="color: #666;">Optional: List the capabilities this Mule instance supports</small>
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <% if @error_message %>
+          <%= form.submit "Add Anyway (Unverified)", class: "btn btn-success" %>
+          <%= form.hidden_field :force, value: "true" %>
+          <%= link_to "Try Again", new_mule_client_path, class: "btn", style: "margin-left: 0.5rem;" %>
+        <% else %>
+          <%= form.submit "Register Client", class: "btn btn-success" %>
+        <% end %>
+        <%= link_to "Cancel", root_path, class: "btn", style: "margin-left: 0.5rem;" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    Connection Help
+  </div>
+  
+  <div class="card-body">
+    <h4>How to connect a Mule instance:</h4>
+    <ol>
+      <li><strong>Start your Mule instance</strong> with gRPC enabled:
+        <pre style="background: #f8f9fa; padding: 1rem; border-radius: 4px; margin: 0.5rem 0;">mule server --grpc-port 9090</pre>
+      </li>
+      <li><strong>Ensure the gRPC port is accessible</strong> from this MoM instance</li>
+      <li><strong>Enter the connection details</strong> in the form above</li>
+      <li><strong>Click "Register Client"</strong> to add it to the dashboard</li>
+    </ol>
+    
+    <p><strong>Note:</strong> The Mule instance must have gRPC enabled and be reachable from this MoM server.</p>
+  </div>
+</div>
