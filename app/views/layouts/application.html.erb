@@ -416,7 +416,7 @@
       }
 
       .theme-toggle {
-        position: fixed;
+        position: absolute;
         top: 1rem;
         right: 1rem;
         background: var(--bg-secondary);
@@ -538,20 +538,21 @@
   </head>
 
   <body>
-    <div id="theme-toggle" class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</div>
-    
     <header class="header">
       <div class="container">
-        <div class="header-content">
-          <div class="header-icon">
-            <img src="/mom_transparent.png" alt="MoM Logo" />
+        <div id="theme-toggle" class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</div>
+        <a href="/" style="text-decoration: none; color: inherit; display: block;">
+          <div class="header-content">
+            <div class="header-icon">
+              <img src="/mom_transparent.png" alt="MoM Logo" />
+            </div>
+            <div class="header-text">
+              <h1 class="brand-name">MoM</h1>
+              <div class="brand-subtitle">Mule of Mules</div>
+              <p class="tagline">Centralized Management for Mule AI Agents</p>
+            </div>
           </div>
-          <div class="header-text">
-            <h1 class="brand-name">MoM</h1>
-            <div class="brand-subtitle">Mule of Mules</div>
-            <p class="tagline">Centralized Management for Mule AI Agents</p>
-          </div>
-        </div>
+        </a>
       </div>
     </header>
 

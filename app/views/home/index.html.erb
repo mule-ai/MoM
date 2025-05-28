@@ -46,7 +46,7 @@
     <% else %>
       <div class="grid">
         <% @clients.each do |client| %>
-          <div class="card">
+          <div class="card" style="cursor: pointer;" onclick="window.location.href='<%= mule_client_path(client[:id]) %>'">
             <div class="card-body">
               <h3 style="margin-top: 0;"><%= client[:name] %></h3>
               <p><strong>Host:</strong> <%= client[:host] %>:<%= client[:port] %></p>
@@ -69,7 +69,7 @@
                 <% end %>
               </p>
               
-              <div class="button-group">
+              <div class="button-group" onclick="event.stopPropagation();">
                 <%= link_to "View Details", mule_client_path(client[:id]), class: "btn" %>
                 <%= button_to "Remove", mule_client_path(client[:id]), method: :delete, 
                     class: "btn btn-danger", 

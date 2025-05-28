@@ -85,11 +85,11 @@ class MuleClientManager
       require_relative '../../lib/proto/mule_client_pb'
       require_relative '../../lib/proto/mule_client_services_pb'
       
-      conn = GRPC::Core::Channel.new("#{client.host}:#{client.port}", {}, :this_channel_is_insecure)
+      conn = GRPC::Core::Channel.new("#{client[:host]}:#{client[:port]}", {}, :this_channel_is_insecure)
       stub = Mule::V1::MuleService::Stub.new(nil, nil, channel_override: conn)
       
       response = stub.list_providers(Mule::V1::ListProvidersRequest.new, deadline: Time.now + 10)
-      response.providers.map do |provider|
+      response.providers.sort_by { |provider| provider.name }.map do |provider|
         {
           name: provider.name,
           type: 'unknown',  # Provider type not available in Mule protobuf
@@ -111,11 +111,11 @@ class MuleClientManager
       require_relative '../../lib/proto/mule_client_pb'
       require_relative '../../lib/proto/mule_client_services_pb'
       
-      conn = GRPC::Core::Channel.new("#{client.host}:#{client.port}", {}, :this_channel_is_insecure)
+      conn = GRPC::Core::Channel.new("#{client[:host]}:#{client[:port]}", {}, :this_channel_is_insecure)
       stub = Mule::V1::MuleService::Stub.new(nil, nil, channel_override: conn)
       
       response = stub.list_agents(Mule::V1::ListAgentsRequest.new, deadline: Time.now + 10)
-      response.agents.map do |agent|
+      response.agents.sort_by { |agent| agent.name }.map do |agent|
         {
           id: agent.id.to_s,
           name: agent.name,
@@ -140,11 +140,11 @@ class MuleClientManager
       require_relative '../../lib/proto/mule_client_pb'
       require_relative '../../lib/proto/mule_client_services_pb'
       
-      conn = GRPC::Core::Channel.new("#{client.host}:#{client.port}", {}, :this_channel_is_insecure)
+      conn = GRPC::Core::Channel.new("#{client[:host]}:#{client[:port]}", {}, :this_channel_is_insecure)
       stub = Mule::V1::MuleService::Stub.new(nil, nil, channel_override: conn)
       
       response = stub.list_workflows(Mule::V1::ListWorkflowsRequest.new, deadline: Time.now + 10)
-      response.workflows.map do |workflow|
+      response.workflows.sort_by { |workflow| workflow.name }.map do |workflow|
         {
           name: workflow.name,
           description: workflow.description || "No description available"
@@ -249,7 +249,7 @@ class MuleClientManager
       require_relative '../../lib/proto/mule_client_pb'
       require_relative '../../lib/proto/mule_client_services_pb'
       
-      conn = GRPC::Core::Channel.new("#{client.host}:#{client.port}", {}, :this_channel_is_insecure)
+      conn = GRPC::Core::Channel.new("#{client[:host]}:#{client[:port]}", {}, :this_channel_is_insecure)
       stub = Mule::V1::MuleService::Stub.new(nil, nil, channel_override: conn)
       
       request = Mule::V1::ExecuteWorkflowRequest.new(

@@ -102,7 +102,7 @@ class MuleManagerServer < Mule::MuleManagerService::Service
 
   def execute_workflow_async(client, request, execution_id)
     begin
-      conn = GRPC::Core::Channel.new("#{client.host}:#{client.port}", {}, :this_channel_is_insecure)
+      conn = GRPC::Core::Channel.new("#{client[:host]}:#{client[:port]}", {}, :this_channel_is_insecure)
       stub = Mule::MuleService::Stub.new(nil, nil, channel_override: conn)
       
       workflow_request = Mule::ExecuteWorkflowRequest.new(
